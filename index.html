@@ -52,7 +52,7 @@
             var status = "<b> Status: </b>";
             
                 for(var i = 0; i < data.length; i++){
-                    var cat = data[i].category;
+                    var cat = data[i].category; 
                     var status1;
                     if(!data[i].outcome_status){status1 = "Not Available"} else {status1 = data[i].outcome_status.category;}
                         this.text += crime + cat + "<br>" + status + status1 + "<br> <br>";
