@@ -1,0 +1,74 @@
+<html>
+<head>
+<title>CrimeDigest</title>    
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="http://bootswatch.com/cosmo/bootstrap.min.css">
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+</head>
+<body>
+    <script>
+        $( document ).ready(function() {
+            this.element = $("#location");
+            $("#title").slideDown(2000);
+            this.element.fadeIn(2000);
+            $("#inputDefault").fadeIn(2000);
+            $("#button").fadeIn(2000);
+            $("#button").click(function(){
+                postcodeRequest();
+            });
+            getLocation();
+        });
+        
+        function getLocation(){
+            navigator.geolocation.getCurrentPosition(showPosition);
+        }
+        
+        function showPosition(position){
+            var tlong = position.coords.longitude;
+            var tlat = position.coords.latitude;
+            tlong = tlong.toFixed(5);
+            tlat = tlat.toFixed(5);
+            
+            getRequest(tlat, tlong);
+        }
+        
+        function postcodeRequest(){
+                var str = $("#inputDefault").val().replace(/\s/g, '');
+              var link = "http://maps.googleapis.com/maps/api/geocode/json?address=" + str;
+            $.get(link, function (data){
+                var latit = data.results[0].geometry.location.lat.toString();
+                var longit = data.results[0].geometry.location.lng.toString();
+                getRequest(latit, longit);
+            });
+        }
+        
+        function getRequest(long, lat){
+        var link = "http://data.police.uk/api/crimes-at-location?date=2014-1&lat=" + long + "&lng=" + lat;
+            $.get( link, function( data ) {
+            this.text = "";
+            var crime = "<b>Crime: </b>";
+            var status = "<b> Status: </b>";
+            
+                for(var i = 0; i < data.length; i++){
+                    var cat = data[i].category;
+                    var status1;
+                    if(!data[i].outcome_status){status1 = "Not Available"} else {status1 = data[i].outcome_status.category;}
+                        this.text += crime + cat + "<br>" + status + status1 + "<br> <br>";
+                }
+                if(this.text == ""){
+                    this.text = "No Crimes in this area.";
+                }
+                $("#location").html(this.text);
+            });
+        }
+    </script>
+    <div class="safd"><center>        
+        <h1 id="title" style="display:none">Crime Digest</h1>
+        <h3 id="location" style="display:none">Loading...</h3>
+            <input type="text" style="display:none; width: 300px;" class="form-control" id="inputDefault" value="Enter UK Location or Allow us to find you."> <div style="padding-bottom:7px"></div>
+            <div class="btn btn-default" style="display:none" id="button">Submit</div>
+    </center></div>
+</body>
+</html>
